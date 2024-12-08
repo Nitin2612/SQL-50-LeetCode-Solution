@@ -1,2 +1,4 @@
 # SQL-50-LeetCode-Solution
-Showcasing my Problem-Solving (PS) skills through various assignments and projects. Explore solutions, algorithms, and logical approaches to diverse challenges!
+🚀 LeetCode SQL Solutions with Explanations
+
+This repository contains 50+ SQL LeetCode solutions with clear, step-by-step explanations. Master key concepts like JOINs, Subqueries, Aggregations, and more. Each problem is categorized by difficulty (Easy, Medium, Hard) to help you prepare for interviews at top tech firms. Star this repo ⭐️ and level up your SQL skills!
