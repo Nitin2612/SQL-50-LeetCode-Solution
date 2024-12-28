@@ -1,0 +1,19 @@
+WITH TotalUsers AS (
+    SELECT COUNT(*) AS total_users
+    FROM Users
+),
+ContestRegistrations AS (
+    SELECT contest_id, COUNT(DISTINCT user_id) AS registered_users
+    FROM Register
+    GROUP BY contest_id
+),
+PercentageCalculation AS (
+    SELECT 
+        contest_id,
+        ROUND((registered_users * 100.0) / total_users, 2) AS percentage
+    FROM ContestRegistrations
+    CROSS JOIN TotalUsers
+)
+SELECT contest_id, percentage
+FROM PercentageCalculation
+ORDER BY percentage DESC, contest_id ASC;
