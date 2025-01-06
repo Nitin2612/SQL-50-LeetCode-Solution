@@ -1,0 +1,13 @@
+SELECT 
+    employee_id, 
+    department_id
+FROM 
+    Employee
+WHERE 
+    primary_flag = 'Y'
+   OR NOT EXISTS (
+       SELECT 1
+       FROM Employee e2
+       WHERE e2.employee_id = Employee.employee_id
+         AND e2.primary_flag = 'Y'
+   );
