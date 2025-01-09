@@ -1,0 +1,27 @@
+WITH DailyTotal AS (
+    SELECT
+        visited_on,
+        SUM(amount) AS daily_amount
+    FROM Customer
+    GROUP BY visited_on
+),
+MovingWindow AS (
+    SELECT
+        visited_on,
+        SUM(daily_amount) OVER (
+            ORDER BY visited_on
+            ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+        ) AS total_amount,
+        COUNT(daily_amount) OVER (
+            ORDER BY visited_on
+            ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+        ) AS days_count
+    FROM DailyTotal
+)
+SELECT
+    visited_on,
+    total_amount AS amount,
+    ROUND(total_amount * 1.0 / days_count, 2) AS average_amount
+FROM MovingWindow
+WHERE days_count = 7
+ORDER BY visited_on;
