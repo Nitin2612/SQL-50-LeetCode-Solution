@@ -1,0 +1,67 @@
+WITH UserRatings AS (
+    SELECT 
+        u.name AS user_name, 
+        COUNT(mr.movie_id) AS rating_count
+    FROM 
+        Users u
+    JOIN 
+        MovieRating mr
+    ON 
+        u.user_id = mr.user_id
+    GROUP BY 
+        u.name
+),
+MaxRatings AS (
+    SELECT 
+        MAX(rating_count) AS max_count
+    FROM 
+        UserRatings
+),
+TopUsers AS (
+    SELECT 
+        user_name
+    FROM 
+        UserRatings
+    WHERE 
+        rating_count = (SELECT max_count FROM MaxRatings)
+    ORDER BY 
+        user_name
+    LIMIT 1
+),
+FebruaryRatings AS (
+    SELECT 
+        m.title AS movie_title,
+        AVG(mr.rating) AS avg_rating
+    FROM 
+        Movies m
+    JOIN 
+        MovieRating mr
+    ON 
+        m.movie_id = mr.movie_id
+    WHERE 
+        mr.created_at BETWEEN '2020-02-01' AND '2020-02-29'
+    GROUP BY 
+        m.title
+),
+MaxAverageRating AS (
+    SELECT 
+        MAX(avg_rating) AS max_avg
+    FROM 
+        FebruaryRatings
+),
+TopMovies AS (
+    SELECT 
+        movie_title
+    FROM 
+        FebruaryRatings
+    WHERE 
+        avg_rating = (SELECT max_avg FROM MaxAverageRating)
+    ORDER BY 
+        movie_title
+    LIMIT 1
+)
+SELECT 
+    (SELECT user_name FROM TopUsers) AS results
+UNION ALL
+SELECT 
+    (SELECT movie_title FROM TopMovies);
