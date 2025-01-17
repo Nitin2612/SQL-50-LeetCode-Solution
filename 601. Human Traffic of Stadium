@@ -1,0 +1,28 @@
+WITH consecutive_rows AS (
+    SELECT
+        a.id,
+        a.visit_date,
+        a.people,
+        b.id AS id_b,
+        c.id AS id_c
+    FROM
+        Stadium a
+    LEFT JOIN
+        Stadium b ON a.id + 1 = b.id AND b.people >= 100
+    LEFT JOIN
+        Stadium c ON a.id + 2 = c.id AND c.people >= 100
+    WHERE
+        a.people >= 100
+)
+SELECT DISTINCT
+    s.id,
+    s.visit_date,
+    s.people
+FROM
+    consecutive_rows cr
+JOIN
+    Stadium s ON s.id IN (cr.id, cr.id_b, cr.id_c)
+WHERE
+    cr.id_b IS NOT NULL AND cr.id_c IS NOT NULL
+ORDER BY
+    s.visit_date;
