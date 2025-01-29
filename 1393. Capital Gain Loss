@@ -1,0 +1,15 @@
+WITH BuyPrices AS (
+    SELECT stock_name, operation_day, price
+    FROM Stocks
+    WHERE operation = 'Buy'
+),
+SellPrices AS (
+    SELECT stock_name, operation_day, price
+    FROM Stocks
+    WHERE operation = 'Sell'
+)
+SELECT b.stock_name, SUM(s.price - b.price) AS capital_gain_loss
+FROM BuyPrices b
+JOIN SellPrices s
+ON b.stock_name = s.stock_name AND b.operation_day < s.operation_day
+GROUP BY b.stock_name;
