@@ -1,0 +1,21 @@
+WITH RankedActivities AS (
+    SELECT 
+        username,
+        activity,
+        startDate,
+        endDate,
+        ROW_NUMBER() OVER (PARTITION BY username ORDER BY endDate DESC) AS rank_num,
+        COUNT(*) OVER (PARTITION BY username) AS activity_count
+    FROM 
+        UserActivity
+)
+SELECT 
+    username,
+    activity,
+    startDate,
+    endDate
+FROM 
+    RankedActivities
+WHERE 
+    (activity_count = 1 AND rank_num = 1) -- If the user has only one activity
+    OR (activity_count > 1 AND rank_num = 2); -- If the user has more than one activity, select the second most recent
