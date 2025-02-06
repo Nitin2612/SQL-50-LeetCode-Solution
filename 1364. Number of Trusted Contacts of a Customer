@@ -1,0 +1,24 @@
+SELECT
+    i.invoice_id,
+    c.customer_name,
+    i.price,
+    COALESCE(ct.contacts_cnt, 0) AS contacts_cnt,
+    COALESCE(ct.trusted_contacts_cnt, 0) AS trusted_contacts_cnt
+FROM
+    Invoices i
+JOIN
+    Customers c ON i.user_id = c.customer_id
+LEFT JOIN (
+    SELECT
+        co.user_id,
+        COUNT(co.contact_email) AS contacts_cnt,
+        SUM(CASE WHEN cu.customer_id IS NOT NULL THEN 1 ELSE 0 END) AS trusted_contacts_cnt
+    FROM
+        Contacts co
+    LEFT JOIN
+        Customers cu ON co.contact_email = cu.email
+    GROUP BY
+        co.user_id
+) ct ON i.user_id = ct.user_id
+ORDER BY
+    i.invoice_id;
