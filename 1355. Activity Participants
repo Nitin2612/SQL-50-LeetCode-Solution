@@ -1,0 +1,13 @@
+WITH ActivityCount AS (
+    SELECT activity, COUNT(*) AS participant_count
+    FROM Friends
+    GROUP BY activity
+)
+
+SELECT a.name AS results
+FROM Activities a
+JOIN ActivityCount ac ON a.name = ac.activity
+WHERE ac.participant_count NOT IN (
+    (SELECT MIN(participant_count) FROM ActivityCount),
+    (SELECT MAX(participant_count) FROM ActivityCount)
+);
