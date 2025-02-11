@@ -1,0 +1,26 @@
+WITH TransactionCounts AS (
+    SELECT 
+        v.user_id, 
+        v.visit_date, 
+        COUNT(t.user_id) AS transactions_count
+    FROM Visits v
+    LEFT JOIN Transactions t
+    ON v.user_id = t.user_id AND v.visit_date = t.transaction_date
+    GROUP BY v.user_id, v.visit_date
+),
+MaxTransactionCount AS (
+    SELECT MAX(transactions_count) AS max_count FROM TransactionCounts
+),
+AllCounts AS (
+    SELECT 0 AS transactions_count
+    UNION ALL
+    SELECT n FROM generate_series(1, (SELECT max_count FROM MaxTransactionCount)) AS n
+)
+SELECT 
+    a.transactions_count, 
+    COUNT(tc.user_id) AS visits_count
+FROM AllCounts a
+LEFT JOIN TransactionCounts tc
+ON a.transactions_count = tc.transactions_count
+GROUP BY a.transactions_count
+ORDER BY a.transactions_count;
